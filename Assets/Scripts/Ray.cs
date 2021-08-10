@@ -57,7 +57,7 @@ public class Ray : MonoBehaviour
                     del.SetActive(false);
                     ray.enabled = false;
                     IndicatorState = true;
-                    ind.enabled = true;
+                    //ind.enabled = true;
                 }
                 else
                 {
@@ -74,7 +74,7 @@ public class Ray : MonoBehaviour
     void DetectGround()
     {
         Vector2 screenSize = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
-
+        
         List<ARRaycastHit> hitInfos = new List<ARRaycastHit>();
 
         if(arMng.Raycast(screenSize, hitInfos, TrackableType.Planes))

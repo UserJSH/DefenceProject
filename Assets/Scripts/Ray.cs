@@ -10,19 +10,18 @@ public class Ray : MonoBehaviour
 {
     [SerializeField] private GameObject indicator;
     [SerializeField] private GameObject pre;
+    [SerializeField] private Canvas canvas;
     bool IndicatorState = false;
     private ARRaycastManager arMng;
-    private GameObject placedObj;
-    private PlaceController ind;
-    private Ray ray;
+    private WeaphonesController Weaphone;
+    //private GameObject placedObj;
 
     // Start is called before the first frame update
     void Start()
     {
         indicator.SetActive(false);
         arMng = GetComponent<ARRaycastManager>();
-        ind = GetComponent<PlaceController>();
-        ray = GetComponent<Ray>();
+        Weaphone = GetComponent<WeaphonesController>();
     }
 
     // Update is called once per frame
@@ -34,39 +33,36 @@ public class Ray : MonoBehaviour
         }
         
 
-        if(indicator.activeInHierarchy && Input.touchCount > 0)
+        if(Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
 
 
             if(touch.phase == TouchPhase.Began)
             {
-                if(placedObj == null)
-                {
-                    GameObject obj = Instantiate(pre);
-                    //obj.transform.position = indicator.transform.position + new Vector3(0.28f, 0);
-                    obj.transform.position = indicator.transform.position;
-                    obj.transform.rotation = indicator.transform.rotation;
-                    obj.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
-                    //obj.transform.rotation = Quaternion.Euler(0,-90,0);
+                GameObject obj = Instantiate(pre);
+                obj.transform.position = indicator.transform.position;
+                obj.transform.rotation = indicator.transform.rotation;
+                obj.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
 
-                    placedObj = obj;
-
-
-                    GameObject del = del = GameObject.Find("Ground 1");
-                    del.SetActive(false);
-                    ray.enabled = false;
-                    IndicatorState = true;
-                    //ind.enabled = true;
-                }
-                else
-                {
+                //GameObject del = del = GameObject.Find("Ground 1");
+                //del.SetActive(false);
+                IndicatorState = true;
+                indicator.SetActive(false);
+                Weaphone.enabled = true;
+                
+                //if (placedObj == null)
+                //{
                     
-                    placedObj.transform.SetPositionAndRotation(
-                            indicator.transform.position,
-                            indicator.transform.rotation
-                        );
-                }
+                //}
+                //else
+                //{
+                    
+                //    placedObj.transform.SetPositionAndRotation(
+                //            indicator.transform.position,
+                //            indicator.transform.rotation
+                //        );
+                //}
 
             }
         }
@@ -83,17 +79,14 @@ public class Ray : MonoBehaviour
             indicator.SetActive(true);
 
             indicator.transform.position = hitInfos[0].pose.position;
-            //indicator.transform.rotation = Quaternion.Euler(0, 180, 0);
             indicator.transform.rotation = hitInfos[0].pose.rotation;
             indicator.transform.position += indicator.transform.up * 0.1f;
-
-            //indicator.transform.localScale = new Vector3(dis * 0.001f, dis * 0.001f, dis * 0.001f);
             indicator.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
 
         }
         else
         {
-            indicator.SetActive(false);
+            //indicator.SetActive(false);
         }
     }
 

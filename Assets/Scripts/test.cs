@@ -2,32 +2,66 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class test : WeaphonesController
+public class test : MonoBehaviour
 {
-    private Vector2 InputPosPivot;
+    private Animator anim;
 
-    //초기화
-    private void init()
+    float ct = 0;
+    float et = 0.3f;
+    private void OnGUI()
     {
+        if (GUILayout.Button("test"))
+        {
+            StartCoroutine(EnemyTakeDamage());
+        }
+    }
+    public enum State
+    {
+        Move,
+        Attack,
+        TakeDamage,
+        Die,
+    }
+
+    State state;
+    // Start is called before the first frame update
+    void Start()
+    {
+        anim = GetComponent<Animator>();
+        state = State.Move;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        ct += Time.deltaTime;
+        switch (state)
+        {
+            case State.Move:
+                EnemyMove();
+                break;
+            case State.TakeDamage:
+                break;
+
+
+        }
+    }
+
+    private void EnemyMove()
+    {
+        anim.SetBool("Walk Forward", true);
 
     }
-    //놓기
-    protected override void OnPut(Vector3 pos)
+    public IEnumerator EnemyTakeDamage()
     {
-        var rigid = HoldingObj.GetComponent<Rigidbody>();
-        rigid.useGravity = true;
-        var direction = mainCam.transform.TransformDirection(Vector3.forward.normalized);
+        state = State.TakeDamage;
+        anim.SetBool("Walk Forward", false);
+        anim.SetTrigger("Take Damage");
 
-        var delta = (pos.y - InputPosPivot.y) * 100 / Screen.height; // 잡은 지점과 놓은 지점의 차이값, 이를 이용해 공을 던지는 힘
-        rigid.AddForce((direction + Vector3.up) * 4.5f * delta); // (물리적용)앞으로 힘줌
-        HoldingObj.transform.SetParent(null);
-        InputPosPivot.y = pos.y; // 놓은시점의 y값을 넣어줌
+
+        yield return new WaitForSeconds(et);
+
+        state = State.Move;
     }
 
-    //잡기
-    protected override void OnHold()
-    {
-        //base.OnHold();
-        InputPosPivot = InputPos;
-    }
 }

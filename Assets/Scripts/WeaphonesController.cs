@@ -9,38 +9,40 @@ public class WeaphonesController : MonoBehaviour
     protected const float cameraDistance = 1.5f; //
     protected float positionY = 0.2f; // Y축 포지션
     [SerializeField] protected GameObject[] obj; // 생성할 오브젝트
+    [SerializeField] private Animator BowAnim; //석궁 애니메이터
 
     protected Camera mainCam; // 메인카메라
     protected GameObject HoldingObj; // 손으로 잡은 오브젝트
     protected Vector3 InputPos; // input posision
 
-    public GameObject arCamera;
+    //public GameObject arCamera;
 
 
     // Start is called before the first frame update
     void Start()
     {
         mainCam = Camera.main;
-        init();
-
+        obj[0].SetActive(true);
+        GameObject.Find("Image").SetActive(true);
+        //init();
     }
 
-    private void init()
-    {
-        //어느위치에 오브젝트를 생성시킬지 position을 받아옴
-        var pos = mainCam.ViewportToWorldPoint(new Vector3(0.45f, positionY, mainCam.nearClipPlane * cameraDistance));
+    //private void init()
+    //{
+    //    //어느위치에 오브젝트를 생성시킬지 position을 받아옴
+    //    var pos = mainCam.ViewportToWorldPoint(new Vector3(0.45f, positionY, mainCam.nearClipPlane * cameraDistance));
 
-        //랜덤
-        var index = UnityEngine.Random.Range(0, obj.Length);
+    //    //랜덤
+    //    var index = UnityEngine.Random.Range(0, obj.Length);
 
-        //오브젝트 생성
-        var cube = Instantiate(obj[index], pos, Quaternion.identity, mainCam.transform);
-        //RigidBody
-        var rigid = cube.GetComponent<Rigidbody>();
-        rigid.useGravity = false;
-        rigid.velocity = Vector3.zero;
-        rigid.angularVelocity = Vector3.zero;
-    }
+    //    //오브젝트 생성
+    //    var cube = Instantiate(obj[index], pos, Quaternion.identity, mainCam.transform);
+    //    //RigidBody
+    //    var rigid = cube.GetComponent<Rigidbody>();
+    //    rigid.useGravity = false;
+    //    rigid.velocity = Vector3.zero;
+    //    rigid.angularVelocity = Vector3.zero;
+    //}
 
     // Update is called once per frame
     void Update()
@@ -50,7 +52,6 @@ public class WeaphonesController : MonoBehaviour
 
         InputPos = TouchHelper.TouchPos;
 
- 
         if (TouchHelper.IsDown)
         {
             WeaphonesShoot();
@@ -82,43 +83,28 @@ public class WeaphonesController : MonoBehaviour
         HoldingObj.transform.position = Vector3.Lerp(HoldingObj.transform.position, mainCam.ScreenToWorldPoint(pos), Time.deltaTime * 7f);
     }
 
-    private Vector2 InputPosPivot;
-
-    //초기화
-
-    //놓기
-    protected virtual void OnPut(Vector3 pos)
-    {
-        var rigid = HoldingObj.GetComponent<Rigidbody>();
-        rigid.useGravity = true;
-        var direction = mainCam.transform.TransformDirection(Vector3.forward.normalized);
-
-        var delta = (pos.y - InputPosPivot.y) * 100 / Screen.height; // 잡은 지점과 놓은 지점의 차이값, 이를 이용해 공을 던지는 힘
-        rigid.AddForce((direction + Vector3.up) * 4.5f * delta); // (물리적용)앞으로 힘줌
-        HoldingObj.transform.SetParent(null);
-        InputPosPivot.y = pos.y; // 놓은시점의 y값을 넣어줌
-    }
-
-    //잡기
-    protected virtual void OnHold()
-    {
-        //base.OnHold();
-        InputPosPivot = InputPos;
-    }
     public void WeaphonesShoot()
     {
         RaycastHit hit;
-        if (Physics.Raycast(arCamera.transform.position, arCamera.transform.forward, out hit))
+        if (Physics.Raycast(mainCam.transform.position, mainCam.transform.forward, out hit))
         {
-            if (hit.transform.tag == "Enemy")
-            {
-                
-                Destroy(hit.transform.gameObject);
+            BowAnim.SetTrigger("Shoot");
+            //if (hit.transform.tag == "Enemy")
+            //{
+
+                // 만약 hitInfo가 Enemy컴포넌트를 가지고 있다면?
+                Enemy enemy = hit.transform.GetComponent<Enemy>();
+                if (enemy != null)
+                {
+                    // enemy의 AddDamage 함수를 호출하고 싶다.
+                    enemy.EnemyTakeDamage(1);
+                }
                 Mng.I.count--;
                 //en.IfDestroyed();
                 //Instantiate(smoke, hit.point, Quaternion.LookRotation(hit.normal));
-            }
+            //}
         }
     }
+
 }
 

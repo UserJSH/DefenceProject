@@ -1,41 +1,25 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class EnemyMng : MonoBehaviour
 {
-    [SerializeField] private GameObject[] MobSpawn;
+    [SerializeField] private Transform[] MobSpawn;
+    [SerializeField] private GameObject[] Portal;
     [SerializeField] private GameObject Mob;
+    private Animator anim;
 
     private float currTime = 0f;
     public float createTime = 3f;
 
-/*    int count;
-    public int COUNT
-    {
-        get { return count; }
-        set
-        {
-            count = value;
-            if (count < 0)
-            {
-                count = 0;
-            }
-            if (count > maxCount)
-            {
-                count = maxCount;
-            }
-        }
-    }*/
     public int maxCount = 6;
     private int index;
-
 
 
     // Start is called before the first frame update
     void Start()
     {
-
+        anim = GetComponent<Animator>();
+        index = Random.Range(0, MobSpawn.Length);
     }
 
     // Update is called once per frame
@@ -44,44 +28,41 @@ public class EnemyMng : MonoBehaviour
 
         if (Mng.I.count < maxCount)
         {
-            currTime += Time.deltaTime;
-
-            if (currTime >= createTime)
-            {
-                index = Random.Range(0, MobSpawn.Length);
-                // 1. 적 공장에서 적을 생성
-                GameObject enemy = Instantiate(Mob);
-                // 2. 내 위치에 가져다 놓고 싶다.
-                enemy.transform.position = MobSpawn[index].transform.position;
-                // 3. 내 방향과 일치 시키고 싶다.
-                enemy.transform.rotation = MobSpawn[index].transform.rotation;
-
-                currTime = 0f;
-                Mng.I.count++;
-            }
-
+            StartCoroutine(EnemyGenerator(index));
         }
 
     }
 
-    /*private void EnemyInstantiate()
+    
+
+    private void EnemyInstantiate(int index)
     {
-        index = Random.Range(0, MobSpawn.Length);
         // 1. 적 공장에서 적을 생성
         GameObject enemy = Instantiate(Mob);
         // 2. 내 위치에 가져다 놓고 싶다.
         enemy.transform.position = MobSpawn[index].transform.position;
         // 3. 내 방향과 일치 시키고 싶다.
         enemy.transform.rotation = MobSpawn[index].transform.rotation;
-    }*/
 
-    /*IEnumerator EnemyGenerator()
+        Mng.I.count++;
+    }
+
+    IEnumerator PortalInstantiate(int index)
     {
-        for (int i = Mng.I.count; i < maxCount; i++)
-        {
-            yield return new WaitForSeconds(3f);
-            EnemyInstantiate();
-        }
-    }*/
+        Portal[index].SetActive(true);
+        anim.SetBool("Portal", true);
+
+        EnemyInstantiate(index);
+
+        yield return new WaitForSeconds(1.5f);
+
+        anim.SetBool("Portal", false);
+    }
+
+    IEnumerator EnemyGenerator(int index)
+    {
+        yield return new WaitForSeconds(createTime);
+        PortalInstantiate(index);
+    }
 
 }

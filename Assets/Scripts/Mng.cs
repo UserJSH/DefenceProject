@@ -9,7 +9,6 @@ public class Mng : MonoBehaviour
 
     public int count;
 
-    [SerializeField] private Text t;
 
     private void Awake()
     {
@@ -30,8 +29,4 @@ public class Mng : MonoBehaviour
         count = 0;
     }
 
-    private void Update()
-    {
-        t.text = count.ToString();
-    }
 }

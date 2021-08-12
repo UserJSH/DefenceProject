@@ -1,67 +1,76 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class test : MonoBehaviour
 {
-    private Animator anim;
+    [SerializeField] private Transform[] tm;
+    [SerializeField] private GameObject[] tp;
+    [SerializeField] private GameObject t;
+    [SerializeField] private Animator a;
 
-    float ct = 0;
-    float et = 0.3f;
+    //private float currTime = 0f;
+    public float cre = 3f;
+
+    public int max = 6;
+    private int i;
+
     private void OnGUI()
     {
         if (GUILayout.Button("test"))
         {
-            StartCoroutine(EnemyTakeDamage());
+            if (Mng.I.count < max)
+            {
+                StartCoroutine(por(0));
+            }
         }
     }
-    public enum State
-    {
-        Move,
-        Attack,
-        TakeDamage,
-        Die,
-    }
 
-    State state;
     // Start is called before the first frame update
     void Start()
     {
-        anim = GetComponent<Animator>();
-        state = State.Move;
+        a = GetComponent<Animator>();
+        i = Random.Range(0, tm.Length);
     }
 
     // Update is called once per frame
     void Update()
     {
-        ct += Time.deltaTime;
-        switch (state)
+
+        /*if (Mng.I.count < max)
         {
-            case State.Move:
-                EnemyMove();
-                break;
-            case State.TakeDamage:
-                break;
-
-
-        }
-    }
-
-    private void EnemyMove()
-    {
-        anim.SetBool("Walk Forward", true);
+            StartCoroutine(gene(i));
+        }*/
 
     }
-    public IEnumerator EnemyTakeDamage()
+
+
+
+    private void ene(int index)
     {
-        state = State.TakeDamage;
-        anim.SetBool("Walk Forward", false);
-        anim.SetTrigger("Take Damage");
+        // 1. 적 공장에서 적을 생성
+        GameObject enemy = Instantiate(t);
+        // 2. 내 위치에 가져다 놓고 싶다.
+        enemy.transform.position = tm[index].transform.position;
+        // 3. 내 방향과 일치 시키고 싶다.
+        enemy.transform.rotation = tm[index].transform.rotation;
+
+        Mng.I.count++;
+    }
+
+    IEnumerator por(int index)
+    {
+        tp[index].SetActive(true);
 
 
-        yield return new WaitForSeconds(et);
+        yield return new WaitForSeconds(2f);
+        //ene(index);
+        a.SetBool("Portal", false);
+    }
 
-        state = State.Move;
+    IEnumerator gene(int index)
+    {
+        yield return new WaitForSeconds(cre);
+        por(index);
     }
 
 }

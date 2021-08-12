@@ -10,7 +10,7 @@ public class Ray : MonoBehaviour
 {
     [SerializeField] private GameObject indicator;
     [SerializeField] private GameObject pre;
-    [SerializeField] private Canvas canvas;
+    [SerializeField] private GameObject canvas;
     bool IndicatorState = false;
     private ARRaycastManager arMng;
     private WeaphonesController Weaphone;
@@ -40,14 +40,15 @@ public class Ray : MonoBehaviour
 
             if(touch.phase == TouchPhase.Began)
             {
-                GameObject obj = Instantiate(pre);
-                obj.transform.position = indicator.transform.position;
-                obj.transform.rotation = indicator.transform.rotation;
-                obj.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
+                pre.SetActive(true);
+                pre.transform.position = indicator.transform.position;
+                pre.transform.rotation = indicator.transform.rotation;
+                pre.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
 
                 //GameObject del = del = GameObject.Find("Ground 1");
                 //del.SetActive(false);
                 IndicatorState = true;
+                canvas.GetComponent<Canvas>().enabled = true;
                 indicator.SetActive(false);
                 Weaphone.enabled = true;
                 

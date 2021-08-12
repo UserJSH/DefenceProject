@@ -4,36 +4,40 @@ using UnityEngine;
 public class EnemyMng : MonoBehaviour
 {
     [SerializeField] private Transform[] MobSpawn;
-    [SerializeField] private GameObject[] Portal;
+    [SerializeField] private GameObject Portal;
     [SerializeField] private GameObject Mob;
-    private Animator anim;
+    [SerializeField] private Animator anim;
 
-    private float currTime = 0f;
-    public float createTime = 3f;
+    public float createTime = 5f;
 
     public int maxCount = 6;
     private int index;
+    private bool trigger = false;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        anim = GetComponent<Animator>();
-        index = Random.Range(0, MobSpawn.Length);
+
+        //anim = Portal.GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (trigger) return;
 
-        if (Mng.I.count < maxCount)
+        if (Mng.I.count >= maxCount)
         {
-            StartCoroutine(EnemyGenerator(index));
+            return;
         }
 
-    }
+        Mng.I.count++;
+        trigger = true;
+        index = Random.Range(0, MobSpawn.Length);
+        StartCoroutine(PortalInstantiate(index));
 
-    
+    }
 
     private void EnemyInstantiate(int index)
     {
@@ -44,25 +48,34 @@ public class EnemyMng : MonoBehaviour
         // 3. 내 방향과 일치 시키고 싶다.
         enemy.transform.rotation = MobSpawn[index].transform.rotation;
 
-        Mng.I.count++;
+        Portal.SetActive(false);
+        anim.SetTrigger("PortalOff");
+        trigger = false;
     }
 
     IEnumerator PortalInstantiate(int index)
     {
-        Portal[index].SetActive(true);
-        anim.SetBool("Portal", true);
 
+        Portal.SetActive(true);
+        //GameObject portal = Instantiate(Portal);
+        // 2. 내 위치에 가져다 놓고 싶다.
+        Portal.transform.position = MobSpawn[index].transform.position;
+        // 3. 내 방향과 일치 시키고 싶다.
+        Portal.transform.rotation = MobSpawn[index].transform.rotation;
+        //Portal.transform.localScale = new Vector3(1f, 1f, 0.5f);
+
+        anim.SetTrigger("PortalOn");
+
+        yield return new WaitForSeconds(2f);
         EnemyInstantiate(index);
 
-        yield return new WaitForSeconds(1.5f);
-
-        anim.SetBool("Portal", false);
     }
 
     IEnumerator EnemyGenerator(int index)
     {
         yield return new WaitForSeconds(createTime);
-        PortalInstantiate(index);
+        StartCoroutine(PortalInstantiate(index));
+
     }
 
 }

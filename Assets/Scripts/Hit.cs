@@ -11,6 +11,8 @@ public class Hit : MonoBehaviour
     private void Awake()
     {
         instance = this;
+
+        DontDestroyOnLoad(gameObject);
     }
     public GameObject imageHit;
     // Start is called before the first frame update

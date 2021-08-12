@@ -2,38 +2,51 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using System;
 
 public class Player : MonoBehaviour
 {
-    int hp;
-    public int maxHP = 3;
-    public Slider sliderHP;
+    [SerializeField] private Text t;
+    [SerializeField] private GameObject ui;
+    
+    public static float Score;
 
-    public int HP
+    private void Awake()
     {
-        get { return hp; }
-        set
-        {
-            hp = value;
-            sliderHP.value = value;
-        }
+        DontDestroyOnLoad(gameObject);
     }
 
+    public void ScoreUp()
+    {
+        Score += Time.deltaTime;
+    }
+    public void ScoreReturn()
+    {
+        ui.GetComponent<Score>().GetScore(Score);
+    }
     public void PlayerTakeDamage(int index)
     {
-        hp -= -1;
+        HP.Hp.maxHP--;
+
+        if (HP.Hp.maxHP <= 0)
+        {
+            //SceneManager.LoadScene("GameOver");
+            ui.SetActive(true);
+            ScoreReturn();
+        }
+        else
+        {          
+            Hit.instance.Hiting();          
+        }        
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        sliderHP.maxValue = maxHP;
-        HP = maxHP;
-    }
-
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
         
+    }
+    private void Update()
+    {
+        t.text = (Math.Truncate(Score * 10) / 10).ToString();
     }
 }

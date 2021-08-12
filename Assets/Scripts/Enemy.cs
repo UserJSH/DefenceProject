@@ -5,17 +5,20 @@ using System.Collections;
 public class Enemy : MonoBehaviour
 {
     GameObject[] target;
+    private Player player;
     private Animator anim;
-    private Text t;
+
 
     public float speed = 0.05f; //이동속도
     private int index; //생성 위치
     private float attackDistance = 0.6f; //공격가능 범위
     float currentTime = 0; // 누적시간
     float attackDelay = 2f; // 공격 딜레이
-    float takeDamageDelay = 0.2f; //몹 피격시 딜레이
+    float takeDamageDelay = 0.5f; //몹 피격시 딜레이
     public int attackPower = 1; // 공격력
     public int enemyHp = 2; // 체력
+
+    private bool trigger = false; //코루틴 트리거
 
     public enum State
     {
@@ -26,22 +29,23 @@ public class Enemy : MonoBehaviour
     }
 
     State state;
-    Player player;
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
         target = GameObject.FindGameObjectsWithTag("Player");
         index = Random.Range(0, target.Length);
+        player = GameObject.Find("HP").GetComponent<Player>();
         state = State.Move;
-        t = GameObject.Find("Text1").GetComponent<Text>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        float di = Vector3.Distance(transform.position, target[index].transform.position);
-        t.text = di.ToString();
+        //거리측정용 플레이어까지의
+        //float di = Vector3.Distance(transform.position, target[index].transform.position);
+
         switch (state)
         {
             case State.Move:
@@ -50,6 +54,9 @@ public class Enemy : MonoBehaviour
             case State.Attack:
                 Attack();
                 break;
+            case State.TakeDamage:               
+                break;
+                
 
         }
     }
@@ -96,27 +103,49 @@ public class Enemy : MonoBehaviour
 
     }
 
-    public IEnumerator EnemyTakeDamage(int Damage)
+    public void EnemyTakeDamage(int Damage)
     {
-        state = State.TakeDamage;
-        anim.SetBool("Walk Forward", false);
-
-        enemyHp -= Damage;
         
-        if(enemyHp <= 0)
+        while(anim.GetBool("Walk Forward") || state != State.TakeDamage)
         {
-            anim.SetTrigger("Die");
-            Destroy(gameObject, 2f);
+            anim.SetBool("Walk Forward", false);
+            state = State.TakeDamage;
+        }        
+        enemyHp -= Damage;
+
+        if (trigger) return;
+
+        trigger = true;
+        if (enemyHp <= 0)
+        {
+            StartCoroutine(Die());
         }
         else
         {
-            anim.SetTrigger("Take Damage");
-        }     
+            StartCoroutine(Take());
+        }
+    }
+
+    IEnumerator Take()
+    {
+        anim.SetTrigger("Take Damage");
 
         yield return new WaitForSeconds(takeDamageDelay);
 
         state = State.Move;
+        trigger = false;
+        
     }
+    IEnumerator Die()
+    {
+        anim.SetTrigger("Die");
+        state = State.Die;
+
+        yield return new WaitForSeconds(1.5f);
+        Destroy(gameObject);
+        Mng.I.count--;
+    }
+
 
 
 }

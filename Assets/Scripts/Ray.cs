@@ -8,20 +8,23 @@ using UnityEngine.XR.ARSubsystems;
 
 public class Ray : MonoBehaviour
 {
+    
     [SerializeField] private GameObject indicator;
     [SerializeField] private GameObject pre;
     [SerializeField] private GameObject canvas;
     bool IndicatorState = false;
     private ARRaycastManager arMng;
     private WeaphonesController Weaphone;
-    //private GameObject placedObj;
 
+
+    //private GameObject placedObj;
     // Start is called before the first frame update
     void Start()
     {
         indicator.SetActive(false);
         arMng = GetComponent<ARRaycastManager>();
         Weaphone = GetComponent<WeaphonesController>();
+
     }
 
     // Update is called once per frame
@@ -45,10 +48,9 @@ public class Ray : MonoBehaviour
                 pre.transform.rotation = indicator.transform.rotation;
                 pre.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
 
-                //GameObject del = del = GameObject.Find("Ground 1");
-                //del.SetActive(false);
                 IndicatorState = true;
-                canvas.GetComponent<Canvas>().enabled = true;
+                //canvas.GetComponent<Canvas>().enabled = true;
+                canvas.SetActive(true);
                 indicator.SetActive(false);
                 Weaphone.enabled = true;
                 

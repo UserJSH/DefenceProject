@@ -8,14 +8,10 @@ using System;
 public class Player : MonoBehaviour
 {
     [SerializeField] private Text t;
-    [SerializeField] private GameObject ui;
+    [SerializeField] private GameObject overUi;
     
     public static float Score;
-
-    private void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
+    private bool trigger = false;
 
     public void ScoreUp()
     {
@@ -23,16 +19,20 @@ public class Player : MonoBehaviour
     }
     public void ScoreReturn()
     {
-        ui.GetComponent<Score>().GetScore(Score);
+        if (trigger) return;
+
+        trigger = true;
+        overUi.GetComponent<Score>().GetScore(Score);
     }
     public void PlayerTakeDamage(int index)
     {
+        StartCoroutine(WaitHit());
         HP.Hp.maxHP--;
 
         if (HP.Hp.maxHP <= 0)
         {
             //SceneManager.LoadScene("GameOver");
-            ui.SetActive(true);
+            overUi.SetActive(true);
             ScoreReturn();
         }
         else
@@ -48,5 +48,10 @@ public class Player : MonoBehaviour
     private void Update()
     {
         t.text = (Math.Truncate(Score * 10) / 10).ToString();
+    }
+
+    IEnumerator WaitHit()
+    {
+        yield return new WaitForSeconds(2.5f);
     }
 }

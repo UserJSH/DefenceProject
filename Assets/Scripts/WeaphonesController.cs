@@ -1,19 +1,17 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
 public class WeaphonesController : MonoBehaviour
 {
-    protected const float cameraDistance = 1.5f; //
-    protected float positionY = 0.2f; // Y축 포지션
     [SerializeField] protected GameObject[] obj; // 생성할 오브젝트
     [SerializeField] private Animator BowAnim; //석궁 애니메이터
 
     protected Camera mainCam; // 메인카메라
+    private AudioSource audio; //오디오
     private Player player;
-
+    private float currTime = 0;
+    private float fillTime = 0.5f; //장전시간
+    private TextUI tu;
 
 
     // Start is called before the first frame update
@@ -21,8 +19,11 @@ public class WeaphonesController : MonoBehaviour
     {
         mainCam = Camera.main;
         obj[0].SetActive(true);
+        audio = obj[0].GetComponent<AudioSource>();
         player = GameObject.Find("HP").GetComponent<Player>();
-
+        tu = GetComponent<TextUI>();
+        tu.HitText();
+        tu.ExText();
     }
 
     //    //어느위치에 오브젝트를 생성시킬지 position을 받아옴
@@ -37,15 +38,13 @@ public class WeaphonesController : MonoBehaviour
 
         if (TouchHelper.IsDown)
         {
-            WeaphonesShoot();
-        }
+                WeaphonesShoot();
 
+        }
     }
 
-
-        //잡은 오브젝트를 카메라의 자식으로
-        //HoldingObj.transform.SetParent(mainCam.transform); // 자식등록
-
+    //잡은 오브젝트를 카메라의 자식으로
+    //HoldingObj.transform.SetParent(mainCam.transform); // 자식등록
 
     public void WeaphonesShoot()
     {
@@ -53,20 +52,15 @@ public class WeaphonesController : MonoBehaviour
         if (Physics.Raycast(mainCam.transform.position, mainCam.transform.forward, out hit))
         {
             BowAnim.SetTrigger("Shoot");
-            //if (hit.transform.tag == "Enemy")
-            //{
+            audio.Play();
 
-                // 만약 hitInfo가 Enemy컴포넌트를 가지고 있다면?
-                Enemy enemy = hit.transform.GetComponent<Enemy>();
-                if (enemy != null)
-                {
-                    // enemy의 AddDamage 함수를 호출하고 싶다.
-                    enemy.EnemyTakeDamage(1);                  
-                }
-                
-                //en.IfDestroyed();
-                //Instantiate(smoke, hit.point, Quaternion.LookRotation(hit.normal));
-            //}
+            Enemy enemy = hit.transform.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                // enemy의 AddDamage 함수를 호출하고 싶다.
+                enemy.EnemyTakeDamage(1);
+            }
+
         }
     }
 

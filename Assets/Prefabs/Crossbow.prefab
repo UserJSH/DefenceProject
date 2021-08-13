@@ -358,7 +358,7 @@ GameObject:
   - component: {fileID: 8296172669276728082}
   - component: {fileID: 1074587007457325132}
   m_Layer: 31
-  m_Name: Crossbow 1
+  m_Name: Crossbow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -656,4 +656,4 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8006894593183758672}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0.000013556107, y: -150.95045, z: 0.0000076214164}
+  m_LocalEulerAnglesHint: {x: 0.000015328484, y: -169.99928, z: 0.000008585691}

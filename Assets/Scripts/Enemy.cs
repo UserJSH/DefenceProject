@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour
 
     public float speed = 0.05f; //이동속도
     private int index; //생성 위치
+    private int motion; // 모션 2개중 하나
     private float attackDistance = 0.6f; //공격가능 범위
     float currentTime = 0; // 누적시간
     float attackDelay = 2f; // 공격 딜레이
@@ -45,14 +46,14 @@ public class Enemy : MonoBehaviour
     {
         //거리측정용 플레이어까지의
         //float di = Vector3.Distance(transform.position, target[index].transform.position);
-
+        motion = Random.Range(0, 2);
         switch (state)
         {
             case State.Move:
                 EnemyMove(target, index);
                 break;
             case State.Attack:
-                Attack();
+                Attack(motion);
                 break;
             case State.TakeDamage:               
                 break;
@@ -87,15 +88,21 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void Attack()
+    private void Attack(int motion)
     {
         anim.SetBool("Walk Forward", false);
         // 일정한 시간마다 플레이어를 공격한다.
         currentTime += Time.deltaTime;
         if (currentTime > attackDelay)
         {
-            var motion = Random.Range(1, 2);
-            anim.SetTrigger("Attack 0" + motion);
+            if(motion == 0)
+            {
+                anim.SetTrigger("Attack 01");
+            }
+            else
+            {
+                anim.SetTrigger("Attack 02");
+            }
             player.PlayerTakeDamage(attackPower);
             //target.GetComponent<PlayerMove>().DamageAction(attackPower);
             currentTime = 0;

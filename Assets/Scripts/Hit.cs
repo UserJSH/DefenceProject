@@ -12,7 +12,7 @@ public class Hit : MonoBehaviour
     {
         instance = this;
 
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
     }
     public GameObject imageHit;
     // Start is called before the first frame update
@@ -20,6 +20,7 @@ public class Hit : MonoBehaviour
     {
         // 태어날 때 ImageHit를 보이지 않게 하고 싶다.
         imageHit.SetActive(false);
+        
     }
 
     public void Hiting()
